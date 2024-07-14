@@ -71,10 +71,15 @@ Este projeto implementa um serviço de monitoramento de tarefas em tempo real, u
     *   Implementação da coleta de métricas de CPU e memória.
     *   Streaming de dados via gRPC.
     *   Dockerização do serviço.
+*   **0.12.0 (14/07/2024):**
+    *   Versão inicial do serviço de processamento de dados em Node.js.
+    *   Implementação da API gRPC para receber os dados.
+    *   Streaming de dados via gRPC.
+    *   Armazenamento dos dados com Firestore.
   
 **Próximos Passos:**
 
 *   Implementar a coleta de métricas de disco e rede.
-*   Desenvolver o backend em Node.js.
+*   ~~Desenvolver o backend em Node.js~~.
 *   Criar o frontend em React.
 *   Adicionar mais funcionalidades ao dashboard.
