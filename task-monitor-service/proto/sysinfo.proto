@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package sysinfo;
+
+service SystemMonitor {
+    rpc GetSystemInfo (SystemInfoGetRequest) returns (SystemInfoGetResponse) {}
+    rpc SendSystemInfo (stream SystemInfoCreateRequest) returns (SystemInfoCreateResponse) {}
+}
+
+message SystemInfoGetRequest {
+    string id = 1;
+}
+
+message SystemInfoGetResponse {
+    string id = 1;
+    string ip = 2;
+    string start_time = 3;
+    bytes data = 4;
+}
+
+message SystemInfoContext {
+    string ip = 1;
+    string start_time = 2;
+}
+
+message SystemInfoCreateRequest {
+    oneof body {
+        SystemInfoContext context = 1;
+        bytes data = 2;
+    }
+}
+
+message SystemInfoCreateResponse {
+    string id = 1;
+}
