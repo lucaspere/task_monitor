@@ -18,7 +18,6 @@ Este projeto implementa um serviço de monitoramento de tarefas em tempo real, u
 *   **tonic:** Implementação do gRPC para Rust.
 *   **serde:** Framework para serialização e desserialização de dados.
 *   **chrono:** Biblioteca para manipulação de datas e horas.
-*   **Rust:** Para o serviço de coleta de dados, garantindo desempenho e segurança.
 *   **Docker:** Para facilitar a implantação e a portabilidade.
 *   **(Futuras)** React, Node.js, GCP: Para o desenvolvimento do backend e do frontend.
 
