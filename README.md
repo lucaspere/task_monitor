@@ -1,4 +1,4 @@
-## Monitor de Tarefas Web em Rust e gRPC
+## Monitor de Tarefas Web em Tempo Real
 
 Este projeto implementa um serviço de monitoramento de tarefas em tempo real, utilizando Rust para a coleta de dados do sistema e gRPC para a comunicação com um backend (a ser implementado).
 
@@ -8,18 +8,54 @@ Este projeto implementa um serviço de monitoramento de tarefas em tempo real, u
 *   Streaming de dados via gRPC para o backend
 *   Dashboard web interativo (em desenvolvimento)
 *   Fácil configuração e implantação com Docker
+## Tecnologias Utilizadas
 
-**Tecnologias:**
+* **Backend:**
+    * Node.js
+    * TypeScript
+    * nice-grpc (framework gRPC)
+    * Firestore (banco de dados NoSQL)
+* **Frontend:**
+    * React
+    * TypeScript
+    * (Em desenvolvimento)
+* **Coleta de Dados:**
+    * Rust
+    * sysinfo (biblioteca para informações do sistema)
+    * tonic (biblioteca gRPC para Rust)
+* **Comunicação:**
+    * gRPC (comunicação entre o serviço Rust e o backend Node.js)
+* **Infraestrutura:**
+    * Docker
+    * (Em desenvolvimento)
 
-*   **Rust:** Linguagem de programação utilizada para a implementação do serviço.
-*   **gRPC:** Para comunicação eficiente entre o serviço Rust e o futuro backend.
-*   **sysinfo:** Biblioteca Rust para obter informações do sistema.
-*   **tokio:** Runtime assíncrono para Rust.
-*   **tonic:** Implementação do gRPC para Rust.
-*   **serde:** Framework para serialização e desserialização de dados.
-*   **chrono:** Biblioteca para manipulação de datas e horas.
-*   **Docker:** Para facilitar a implantação e a portabilidade.
-*   **(Futuras)** React, Node.js, GCP: Para o desenvolvimento do backend e do frontend.
+
+## Arquitetura
+
+<p align="center">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/3b8b4e42-2db3-40ad-a466-17608844c0f8">
+      <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/3b8b4e42-2db3-40ad-a466-17608844c0f8">
+      <img alt="Web-Task-Manager" title="Monitor de Tarefas Web" src="https://github.com/user-attachments/assets/3b8b4e42-2db3-40ad-a466-17608844c0f8" height="450px">
+    </picture>
+</p>
+
+
+```
++-------------------+    +-------------------+    +-----------------+
+|  Frontend (React) |    |  Backend (Node.js) |    | Rust (Coleta)   |
++-------------------+    +-------------------+    +-----------------+
+      |                       |                       |
+      |                       |                       |
+      v                       v                       v
+  +-----------+          +-----------+            +-----------+
+  |   Browser |          |   gRPC    |            |   gRPC    |
+  +-----------+          +-----------+            +-----------+
+```
+
+1.  **Rust (Coleta):** Coleta dados do sistema em tempo real e os envia para o backend Node.js via gRPC.
+2.  **Backend (Node.js):** Recebe os dados do serviço Rust, processa e armazena no Firestore.
+3.  **Frontend (React):** Exibe os dados em um dashboard interativo, consumindo a API gRPC do backend.
 
 **Como Executar:**
 **Instalação:**
@@ -42,7 +78,3 @@ Este projeto implementa um serviço de monitoramento de tarefas em tempo real, u
 *   Desenvolver o backend em Node.js.
 *   Criar o frontend em React.
 *   Adicionar mais funcionalidades ao dashboard.
-
-
-
-
