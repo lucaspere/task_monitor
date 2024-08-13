@@ -11,7 +11,6 @@ use std::{error::Error, time::Duration};
 use sysinfo::System;
 use tokio::time;
 use tonic::Request;
-mod grpc;
 mod metrics;
 mod proto {
     tonic::include_proto!("sysinfo");

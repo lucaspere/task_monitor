@@ -10,6 +10,7 @@ import {
   SystemMonitorServiceImplementation,
 } from "./generated/sysinfo";
 import { SystemInfo } from "./models/SystemInfo";
+
 const sendSystemInfo: SystemMonitorServiceImplementation = {
   getSystemInfo: function (
     request: SystemInfoGetRequest,
@@ -26,7 +27,10 @@ const sendSystemInfo: SystemMonitorServiceImplementation = {
       for await (const req of request) {
         if (req.context) {
           console.log(`Received context: ${req.context.startTime}`);
-          await sysinfo.start_save(req.context);
+          await sysinfo.start_save({
+            ...req.context,
+            startTime: req.context.startTime.split("T")[0],
+          });
         }
         if (req.data) {
           console.log(`Received data: ${req.data}`);
