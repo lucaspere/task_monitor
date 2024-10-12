@@ -1,60 +1,39 @@
 #![recursion_limit = "256"]
-
-use chrono::Local;
+use config::Config;
 use dotenv::dotenv;
-use local_ip_address::linux::local_ip;
-use proto::{
-    system_info_create_request::Body, system_monitor_client::SystemMonitorClient,
-    SystemInfoContext, SystemInfoCreateRequest,
-};
-use std::{error::Error, time::Duration};
-use sysinfo::System;
-use tokio::time;
-use tonic::Request;
+use std::error::Error;
+
 mod metrics;
+mod redis;
+mod strategy;
 mod proto {
     tonic::include_proto!("sysinfo");
 }
+mod config;
+mod grpc;
+
+use grpc::grpc_strategy::GrpcStrategy;
+use redis::redis_strategy::RedisStrategy;
+use strategy::DataSendStrategy;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     dotenv().ok();
-    let grpc_port = std::env::var("GRPC_PORT").expect("Expected grpc port to be defined");
-    let grpc_host = std::env::var("GRPC_HOST").expect("Expected grpc host to be defined");
-    let address = format!("{grpc_host}:{grpc_port}");
-    let mut client = SystemMonitorClient::connect(address).await?;
-    let message = async_stream::stream! {
-        let mut interval = time::interval(Duration::from_secs(1));
-        let system_ctx = SystemInfoCreateRequest {
-            body: Some(Body::Context(
-                SystemInfoContext {
-                    ip: local_ip().unwrap().to_string(),
-                    start_time: Local::now().to_rfc3339(),
-                },
-            )),
-        };
 
-        yield system_ctx;
-
-        while let time = interval.tick().await {
-            let mut sys = System::new_all();
-
-            let system = metrics::SystemInfo::get_system_info(&sys);
-            let data = serde_json::to_string(&system).unwrap();
-            let system_ctx = SystemInfoCreateRequest {
-                body: Some(Body::Data(data.as_bytes().to_vec())),
-            };
-
-            yield system_ctx;
-       }
+    // Choose the strategy based on environment variable or command-line argument
+    let strategy = if std::env::var("USE_REDIS").is_ok() {
+        let redis_url = std::env::var("REDIS_URL").unwrap_or("redis://127.0.0.1/".to_string());
+        let stream_key = std::env::var("REDIS_STREAM_KEY").unwrap_or("system_metrics".to_string());
+        Box::new(RedisStrategy::new(&redis_url, &stream_key)?) as Box<dyn DataSendStrategy>
+    } else {
+        let grpc_host = std::env::var("GRPC_HOST").unwrap_or("0.0.0.0".to_string());
+        let grpc_port = std::env::var("GRPC_PORT").unwrap_or("50051".to_string());
+        let grpc_address = format!("{}:{}", grpc_host, grpc_port);
+        Box::new(GrpcStrategy::new(grpc_address).await?) as Box<dyn DataSendStrategy>
     };
 
-    let request = Request::new(message);
-
-    client
-        .send_system_info(request)
-        .await
-        .map(|response| println!("RESPONSE {:?}", response.get_ref()))?;
+    let config = Config::new(strategy);
+    config.run().await?;
 
     Ok(())
 }
